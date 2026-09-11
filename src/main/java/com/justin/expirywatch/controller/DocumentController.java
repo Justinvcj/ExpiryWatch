@@ -40,6 +40,7 @@ public class DocumentController {
     @GetMapping("/new")
     public String newDocumentForm(Model model) {
         model.addAttribute("types", documentService.getAllDocumentTypes());
+        model.addAttribute("needsConfirmation", false);
         return "documents/new";
     }
 
