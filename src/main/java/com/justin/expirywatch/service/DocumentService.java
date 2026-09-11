@@ -17,11 +17,13 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentTypeRepository documentTypeRepository;
     private final UserRepository userRepository;
+    private final com.justin.expirywatch.repository.ReminderRepository reminderRepository;
 
-    public DocumentService(DocumentRepository documentRepository, DocumentTypeRepository documentTypeRepository, UserRepository userRepository) {
+    public DocumentService(DocumentRepository documentRepository, DocumentTypeRepository documentTypeRepository, UserRepository userRepository, com.justin.expirywatch.repository.ReminderRepository reminderRepository) {
         this.documentRepository = documentRepository;
         this.documentTypeRepository = documentTypeRepository;
         this.userRepository = userRepository;
+        this.reminderRepository = reminderRepository;
     }
 
     public List<Document> getDocumentsForUser(String email) {
@@ -49,7 +51,20 @@ public class DocumentService {
         doc.setRawOcrText(rawText);
         doc.setConfidenceScore(confidence);
         
-        return documentRepository.save(doc);
+        doc = documentRepository.save(doc);
+
+        for (Integer days : type.getReminderScheduleDays()) {
+            LocalDate reminderDate = doc.getExtractedExpiryDate().minusDays(days);
+            if (!reminderDate.isBefore(LocalDate.now())) {
+                com.justin.expirywatch.model.Reminder reminder = new com.justin.expirywatch.model.Reminder();
+                reminder.setDocument(doc);
+                reminder.setScheduledFor(reminderDate);
+                reminder.setSent(false);
+                reminderRepository.save(reminder);
+            }
+        }
+        
+        return doc;
     }
 
     public Document getDocument(UUID id, String email) {
