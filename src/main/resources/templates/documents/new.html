@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Document - ExpiryWatch</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f5; padding: 2rem; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { margin-top: 0; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        input, select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: bold; width: 100%; text-align: center; }
+        .btn-primary { background: #2563eb; color: white; margin-bottom: 1rem; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #e5e7eb; color: #374151; }
+        .btn-secondary:hover { background: #d1d5db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Track New Document</h1>
+        
+        <form th:action="@{/documents/new}" method="post">
+            <div class="form-group">
+                <label for="title">Document Title</label>
+                <input type="text" id="title" name="title" required placeholder="e.g. Car Insurance 2026">
+            </div>
+
+            <div class="form-group">
+                <label for="documentTypeId">Document Type</label>
+                <select id="documentTypeId" name="documentTypeId" required onchange="updateSeverity()">
+                    <option value="" disabled selected>Select a type...</option>
+                    <option th:each="type : ${types}" 
+                            th:value="${type.id}" 
+                            th:text="${type.name}"
+                            th:data-severity="${type.defaultSeverity}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="extractedExpiryDate">Expiry Date</label>
+                <input type="date" id="extractedExpiryDate" name="extractedExpiryDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="severity">Severity (Impact of expiring)</label>
+                <select id="severity" name="severity" required>
+                    <option value="minor">Minor</option>
+                    <option value="financial_loss">Financial Loss</option>
+                    <option value="fine">Fine / Penalty</option>
+                    <option value="legal">Legal Issue</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Document</button>
+            <a th:href="@{/documents}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <script>
+        function updateSeverity() {
+            const select = document.getElementById('documentTypeId');
+            const selectedOption = select.options[select.selectedIndex];
+            const defaultSeverity = selectedOption.getAttribute('data-severity');
+            if (defaultSeverity) {
+                document.getElementById('severity').value = defaultSeverity;
+            }
+        }
+    </script>
+</body>
+</html>

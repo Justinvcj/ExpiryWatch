@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${document.title} + ' - ExpiryWatch'">Document Details</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f5; padding: 2rem; margin: 0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; }
+        h1 { margin: 0 0 0.5rem 0; }
+        .meta { color: #6b7280; margin-bottom: 1rem; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-weight: 500; display: inline-block; }
+        .btn-secondary { background: #e5e7eb; color: #374151; }
+        .btn-secondary:hover { background: #d1d5db; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; display: inline-block;}
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-expired { background: #fee2e2; color: #991b1b; }
+        .status-renewed, .status-archived { background: #f3f4f6; color: #4b5563; }
+        
+        .actions { display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+        .actions form { margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a th:href="@{/documents}" style="text-decoration: none; color: #2563eb; margin-bottom: 1rem; display: inline-block;">&larr; Back to Dashboard</a>
+        
+        <div class="header">
+            <div>
+                <h1 th:text="${document.title}">Document Title</h1>
+                <div class="meta">
+                    Type: <strong th:text="${document.documentType.name}">type</strong> • 
+                    Added on: <span th:text="${#temporals.format(document.createdAt, 'yyyy-MM-dd')}">2026-01-01</span>
+                </div>
+                <span class="badge" th:classappend="'status-' + ${document.status}" th:text="${document.status}">ACTIVE</span>
+                <span class="badge" th:text="${document.severity}">MINOR</span>
+            </div>
+        </div>
+
+        <div class="details">
+            <h2>Expiry Information</h2>
+            <p style="font-size: 1.2rem;">
+                Expires on: <strong th:text="${document.extractedExpiryDate}">2026-12-31</strong>
+            </p>
+        </div>
+
+        <div class="actions">
+            <form th:if="${document.status == 'active' || document.status == 'expired'}" 
+                  th:action="@{/documents/{id}/status(id=${document.id})}" method="post">
+                <input type="hidden" name="status" value="renewed">
+                <button type="submit" class="btn btn-secondary">Mark Renewed</button>
+            </form>
+
+            <form th:if="${document.status != 'archived'}" 
+                  th:action="@{/documents/{id}/status(id=${document.id})}" method="post">
+                <input type="hidden" name="status" value="archived">
+                <button type="submit" class="btn btn-secondary">Archive</button>
+            </form>
+
+            <form th:if="${document.status == 'archived'}" 
+                  th:action="@{/documents/{id}/status(id=${document.id})}" method="post">
+                <input type="hidden" name="status" value="active">
+                <button type="submit" class="btn btn-secondary">Unarchive</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

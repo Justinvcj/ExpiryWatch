@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - ExpiryWatch</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f5; padding: 2rem; margin: 0; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;}
+        .card a { text-decoration: none; color: inherit; display: block; flex-grow: 1;}
+        .card:hover { box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        h1, h2, h3 { margin-top: 0; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 500; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-danger { background: #dc2626; color: white; }
+        .badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .severity-minor { background: #dbeafe; color: #1e40af; }
+        .severity-financial_loss { background: #fef08a; color: #854d0e; }
+        .severity-legal, .severity-fine { background: #fee2e2; color: #991b1b; }
+        .status-expired { border-left: 4px solid #dc2626; }
+        .meta { color: #6b7280; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>ExpiryWatch</h1>
+                <p>Welcome, <strong th:text="${email}"></strong></p>
+            </div>
+            <div>
+                <a th:href="@{/documents/new}" class="btn btn-primary">+ Add Document</a>
+                <form th:action="@{/logout}" method="post" style="display:inline; margin-left: 1rem;">
+                    <button type="submit" class="btn btn-danger">Log Out</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>Your Documents</h2>
+        
+        <div th:if="${documents.empty}">
+            <p>You have no documents tracked yet. Add one to get started!</p>
+        </div>
+
+        <div th:each="doc : ${documents}" th:classappend="${doc.status == 'expired'} ? 'status-expired' : ''" class="card">
+            <a th:href="@{/documents/{id}(id=${doc.id})}">
+                <h3 th:text="${doc.title}">Document Title</h3>
+                <div class="meta">
+                    <span th:text="${doc.documentType.name}">Type</span> • 
+                    Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> • 
+                    Status: <span th:text="${doc.status}">active</span>
+                </div>
+            </a>
+            <div>
+                <span class="badge" th:classappend="'severity-' + ${doc.severity}" th:text="${doc.severity}">MINOR</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
