@@ -44,17 +44,53 @@
             <p>You have no documents tracked yet. Add one to get started!</p>
         </div>
 
-        <div th:each="doc : ${documents}" th:classappend="${doc.status == 'expired'} ? 'status-expired' : ''" class="card">
-            <a th:href="@{/documents/{id}(id=${doc.id})}">
-                <h3 th:text="${doc.title}">Document Title</h3>
-                <div class="meta">
-                    <span th:text="${doc.documentType.name}">Type</span> • 
-                    Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> • 
-                    Status: <span th:text="${doc.status}">active</span>
+        <div th:if="${!documents.empty}">
+            <h3 style="color: #991b1b; margin-top: 2rem; border-bottom: 2px solid #fee2e2; padding-bottom: 0.5rem;">Expired or Urgent Action Needed</h3>
+            <div th:each="doc : ${documents}" 
+                 th:if="${doc.status == 'expired' || doc.severity == 'legal' || doc.severity == 'fine'}" 
+                 th:classappend="${doc.status == 'expired'} ? 'status-expired' : ''" 
+                 class="card" style="border-left: 4px solid #dc2626;">
+                <a th:href="@{/documents/{id}(id=${doc.id})}">
+                    <h3 th:text="${doc.title}">Document Title</h3>
+                    <div class="meta">
+                        <span th:text="${doc.documentType.name}">Type</span> • 
+                        Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> • 
+                        Status: <span th:text="${doc.status}">active</span>
+                    </div>
+                </a>
+                <div>
+                    <span class="badge" th:classappend="'severity-' + ${doc.severity}" th:text="${doc.severity}">MINOR</span>
                 </div>
-            </a>
-            <div>
-                <span class="badge" th:classappend="'severity-' + ${doc.severity}" th:text="${doc.severity}">MINOR</span>
+            </div>
+
+            <h3 style="color: #166534; margin-top: 2rem; border-bottom: 2px solid #dcfce7; padding-bottom: 0.5rem;">Active & Monitored</h3>
+            <div th:each="doc : ${documents}" 
+                 th:if="${doc.status == 'active' && doc.severity != 'legal' && doc.severity != 'fine'}" 
+                 class="card" style="border-left: 4px solid #16a34a;">
+                <a th:href="@{/documents/{id}(id=${doc.id})}">
+                    <h3 th:text="${doc.title}">Document Title</h3>
+                    <div class="meta">
+                        <span th:text="${doc.documentType.name}">Type</span> • 
+                        Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> • 
+                        Status: <span th:text="${doc.status}">active</span>
+                    </div>
+                </a>
+                <div>
+                    <span class="badge" th:classappend="'severity-' + ${doc.severity}" th:text="${doc.severity}">MINOR</span>
+                </div>
+            </div>
+            
+            <h3 style="color: #4b5563; margin-top: 2rem; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem;">Archived / Renewed</h3>
+            <div th:each="doc : ${documents}" 
+                 th:if="${doc.status == 'archived' || doc.status == 'renewed'}" 
+                 class="card" style="opacity: 0.7;">
+                <a th:href="@{/documents/{id}(id=${doc.id})}">
+                    <h3 th:text="${doc.title}">Document Title</h3>
+                    <div class="meta">
+                        <span th:text="${doc.documentType.name}">Type</span> • 
+                        Status: <span th:text="${doc.status}">archived</span>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
