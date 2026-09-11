@@ -26,9 +26,8 @@ public class DateExtractionService {
 
     public DateExtractionService() {
         this.tesseract = new Tesseract();
-        // The datapath is typically set to where tessdata resides.
-        // In the Docker container (Ubuntu/Debian), it is usually /usr/share/tesseract-ocr/4.00/tessdata or /usr/share/tesseract-ocr/5/tessdata
-        // We leave it default, which looks for TESSDATA_PREFIX env var or default locations.
+        // Point to the local tessdata directory we just created
+        this.tesseract.setDatapath(new File("tessdata").getAbsolutePath());
     }
 
     public static class ExtractResult {
