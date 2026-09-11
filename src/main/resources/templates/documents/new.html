@@ -9,57 +9,103 @@
         h1 { margin-top: 0; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        input, select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: bold; width: 100%; text-align: center; }
+        input, select, textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: bold; width: 100%; text-align: center; box-sizing: border-box;}
         .btn-primary { background: #2563eb; color: white; margin-bottom: 1rem; }
         .btn-primary:hover { background: #1d4ed8; }
         .btn-secondary { background: #e5e7eb; color: #374151; }
         .btn-secondary:hover { background: #d1d5db; }
+        .alert { padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Track New Document</h1>
         
-        <form th:action="@{/documents/new}" method="post">
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Step 1: Upload Form -->
+        <form th:if="${!needsConfirmation}" th:action="@{/documents/new}" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="title">Document Title</label>
-                <input type="text" id="title" name="title" required placeholder="e.g. Car Insurance 2026">
+                <input type="text" id="title" name="title" required placeholder="e.g. Car Insurance 2026" th:value="${title}">
             </div>
 
             <div class="form-group">
                 <label for="documentTypeId">Document Type</label>
                 <select id="documentTypeId" name="documentTypeId" required onchange="updateSeverity()">
-                    <option value="" disabled selected>Select a type...</option>
+                    <option value="" disabled th:selected="${documentTypeId == null}">Select a type...</option>
                     <option th:each="type : ${types}" 
                             th:value="${type.id}" 
                             th:text="${type.name}"
+                            th:selected="${documentTypeId == type.id}"
                             th:data-severity="${type.defaultSeverity}">
                     </option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="extractedExpiryDate">Expiry Date</label>
-                <input type="date" id="extractedExpiryDate" name="extractedExpiryDate" required>
-            </div>
-
-            <div class="form-group">
                 <label for="severity">Severity (Impact of expiring)</label>
                 <select id="severity" name="severity" required>
-                    <option value="minor">Minor</option>
-                    <option value="financial_loss">Financial Loss</option>
-                    <option value="fine">Fine / Penalty</option>
-                    <option value="legal">Legal Issue</option>
+                    <option value="minor" th:selected="${severity == 'minor'}">Minor</option>
+                    <option value="financial_loss" th:selected="${severity == 'financial_loss'}">Financial Loss</option>
+                    <option value="fine" th:selected="${severity == 'fine'}">Fine / Penalty</option>
+                    <option value="legal" th:selected="${severity == 'legal'}">Legal Issue</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">Save Document</button>
+            <div class="form-group">
+                <label for="file">Document Image/PDF (Optional - For Auto-Extraction)</label>
+                <input type="file" id="file" name="file" accept="image/*,application/pdf">
+                <small style="color: #6b7280; display: block; margin-top: 0.5rem;">If you don't upload a file, you'll need to enter the expiry date manually on the next screen.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Process Document</button>
             <a th:href="@{/documents}" class="btn btn-secondary">Cancel</a>
         </form>
+
+        <!-- Step 2: Confirmation Form -->
+        <div th:if="${needsConfirmation}">
+            <div th:if="${confidence != null && confidence > 0.5}" class="alert alert-success">
+                <strong>High Confidence Match:</strong> We found a likely expiry date! Please confirm before saving.
+            </div>
+            <div th:if="${confidence != null && confidence <= 0.5 && confidence > 0}" class="alert alert-warning">
+                <strong>Low Confidence Match:</strong> We guessed a date, but please review it carefully.
+            </div>
+            <div th:if="${confidence == null || confidence == 0}" class="alert alert-danger">
+                <strong>No Date Found:</strong> We couldn't confidently extract a date. Please enter it manually.
+            </div>
+
+            <form th:action="@{/documents/confirm}" method="post">
+                <input type="hidden" name="title" th:value="${title}">
+                <input type="hidden" name="documentTypeId" th:value="${documentTypeId}">
+                <input type="hidden" name="severity" th:value="${severity}">
+                <input type="hidden" name="fileBase64" th:value="${fileBase64}">
+                <input type="hidden" name="fileContentType" th:value="${fileContentType}">
+                <input type="hidden" name="rawText" th:value="${rawText}">
+                <input type="hidden" name="confidence" th:value="${confidence}">
+
+                <div class="form-group">
+                    <label for="extractedExpiryDate">Confirmed Expiry Date</label>
+                    <input type="date" id="extractedExpiryDate" name="extractedExpiryDate" required th:value="${extractedDate}">
+                </div>
+
+                <div class="form-group" th:if="${rawText != null && !rawText.isEmpty()}">
+                    <label>Raw Extracted Text (For Reference)</label>
+                    <textarea rows="5" readonly th:text="${rawText}"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Confirm & Save</button>
+                <a th:href="@{/documents/new}" class="btn btn-secondary">Start Over</a>
+            </form>
+        </div>
+
     </div>
 
-    <script>
+    <script th:if="${!needsConfirmation}">
         function updateSeverity() {
             const select = document.getElementById('documentTypeId');
             const selectedOption = select.options[select.selectedIndex];

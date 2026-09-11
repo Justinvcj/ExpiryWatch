@@ -44,6 +44,15 @@
             </p>
         </div>
 
+        <div th:if="${document.fileData != null}" style="margin-top: 2rem;">
+            <h2>Document Image</h2>
+            <img th:if="${document.fileContentType.startsWith('image/')}" 
+                 th:src="@{/documents/{id}/file(id=${document.id})}" 
+                 style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" alt="Document" />
+            <a th:unless="${document.fileContentType.startsWith('image/')}" 
+               th:href="@{/documents/{id}/file(id=${document.id})}" target="_blank" class="btn btn-secondary">View Attached File</a>
+        </div>
+
         <div class="actions">
             <form th:if="${document.status == 'active' || document.status == 'expired'}" 
                   th:action="@{/documents/{id}/status(id=${document.id})}" method="post">

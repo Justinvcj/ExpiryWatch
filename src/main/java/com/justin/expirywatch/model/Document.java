@@ -42,6 +42,12 @@ public class Document {
     @Column(name = "file_url")
     private String fileUrl;
 
+    @Column(name = "file_data")
+    private byte[] fileData;
+
+    @Column(name = "file_content_type")
+    private String fileContentType;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -65,6 +71,10 @@ public class Document {
     public void setStatus(String status) { this.status = status; }
     public String getFileUrl() { return fileUrl; }
     public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+    public byte[] getFileData() { return fileData; }
+    public void setFileData(byte[] fileData) { this.fileData = fileData; }
+    public String getFileContentType() { return fileContentType; }
+    public void setFileContentType(String fileContentType) { this.fileContentType = fileContentType; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

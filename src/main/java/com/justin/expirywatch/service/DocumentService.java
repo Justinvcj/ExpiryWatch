@@ -7,6 +7,7 @@ import com.justin.expirywatch.repository.DocumentRepository;
 import com.justin.expirywatch.repository.DocumentTypeRepository;
 import com.justin.expirywatch.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class DocumentService {
         return documentTypeRepository.findAll();
     }
 
-    public Document createDocument(String email, Integer typeId, String title, LocalDate expiryDate, String severity) {
+    public Document createDocument(String email, Integer typeId, String title, LocalDate expiryDate, String severity, byte[] fileData, String fileContentType, String rawText, BigDecimal confidence) {
         User user = userRepository.findByEmail(email).orElseThrow();
         DocumentType type = documentTypeRepository.findById(typeId).orElseThrow();
 
@@ -43,6 +44,10 @@ public class DocumentService {
         doc.setExtractedExpiryDate(expiryDate);
         doc.setSeverity(severity);
         doc.setStatus("active");
+        doc.setFileData(fileData);
+        doc.setFileContentType(fileContentType);
+        doc.setRawOcrText(rawText);
+        doc.setConfidenceScore(confidence);
         
         return documentRepository.save(doc);
     }
