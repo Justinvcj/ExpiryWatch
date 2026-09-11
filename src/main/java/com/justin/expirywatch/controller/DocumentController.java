@@ -68,18 +68,26 @@ public class DocumentController {
                 model.addAttribute("rawText", result.rawText);
                 model.addAttribute("confidence", result.confidenceScore);
                 
-                // We shouldn't send the entire byte[] to the template if it's huge, but for V1 simplicity we can just
-                // ask them to re-upload on confirmation, or we save it as a draft. 
-                // To keep it strictly zero-state between requests, we will require the file input again, or base64 encode it.
-                // Given standard constraints, let's just base64 encode it so they don't have to reselect.
                 model.addAttribute("fileBase64", java.util.Base64.getEncoder().encodeToString(file.getBytes()));
                 model.addAttribute("fileContentType", file.getContentType());
                 
                 model.addAttribute("needsConfirmation", true);
                 return "documents/new";
-            } else if (confirmed) {
-                // Step 2: Confirmed! Save it. We must get the file bytes from the hidden base64 string.
-                // Wait, retrieving base64 from a form submission is easier if we just accept it as a parameter.
+            } else if (!confirmed) {
+                // Step 1: Manual entry, no file uploaded. Still need confirmation for the date.
+                model.addAttribute("types", documentService.getAllDocumentTypes());
+                model.addAttribute("title", title);
+                model.addAttribute("documentTypeId", documentTypeId);
+                model.addAttribute("severity", severity);
+                model.addAttribute("extractedDate", "");
+                model.addAttribute("rawText", "");
+                model.addAttribute("confidence", BigDecimal.ZERO);
+                
+                model.addAttribute("fileBase64", "");
+                model.addAttribute("fileContentType", "");
+                
+                model.addAttribute("needsConfirmation", true);
+                return "documents/new";
             }
         } catch (IOException e) {
             model.addAttribute("error", "Error reading file: " + e.getMessage());
@@ -97,12 +105,20 @@ public class DocumentController {
             @RequestParam String title,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate extractedExpiryDate,
             @RequestParam String severity,
-            @RequestParam String fileBase64,
-            @RequestParam String fileContentType,
-            @RequestParam String rawText,
-            @RequestParam BigDecimal confidence) {
+            @RequestParam(required = false, defaultValue = "") String fileBase64,
+            @RequestParam(required = false, defaultValue = "") String fileContentType,
+            @RequestParam(required = false, defaultValue = "") String rawText,
+            @RequestParam(required = false) BigDecimal confidence) {
 
-        byte[] fileBytes = java.util.Base64.getDecoder().decode(fileBase64);
+        byte[] fileBytes = null;
+        if (fileBase64 != null && !fileBase64.isEmpty()) {
+            fileBytes = java.util.Base64.getDecoder().decode(fileBase64);
+        }
+        
+        if (confidence == null) {
+            confidence = BigDecimal.ZERO;
+        }
+
         documentService.createDocument(userDetails.getUsername(), documentTypeId, title, extractedExpiryDate, severity, fileBytes, fileContentType, rawText, confidence);
         return "redirect:/documents";
     }
