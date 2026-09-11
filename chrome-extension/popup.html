@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ExpiryWatch Settings</title>
+    <style>
+        body { font-family: sans-serif; padding: 15px; width: 250px; background: #f4f4f5;}
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 12px; }
+        input { width: 100%; margin-bottom: 15px; padding: 5px; box-sizing: border-box; }
+        button { background: #2563eb; color: white; border: none; padding: 8px 12px; width: 100%; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        #status { color: #16a34a; font-size: 12px; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+    <h3 style="margin-top: 0;">ExpiryWatch</h3>
+    
+    <label for="email">Your Account Email</label>
+    <input type="email" id="email" placeholder="you@example.com" />
+
+    <label for="backendUrl">Backend URL</label>
+    <input type="text" id="backendUrl" placeholder="https://your-app.onrender.com" />
+
+    <button id="saveBtn">Save Settings</button>
+    <div id="status">Settings saved!</div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -36,7 +36,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/register", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/register", "/login", "/css/**", "/api/documents/check").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/documents", true)
                 .permitAll()
             )
+            .httpBasic(org.springframework.security.config.Customizer.withDefaults())
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()

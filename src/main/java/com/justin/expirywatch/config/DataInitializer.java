@@ -16,28 +16,31 @@ public class DataInitializer {
     public CommandLineRunner initData(DocumentTypeRepository documentTypeRepository) {
         return args -> {
             if (documentTypeRepository.count() == 0) {
-                List<String> types = Arrays.asList(
-                        "vehicle_insurance:financial_loss",
-                        "puc:fine",
-                        "passport:legal",
-                        "visa:legal",
-                        "gym_membership:minor",
-                        "domain:financial_loss",
-                        "software_license:minor",
-                        "amc:financial_loss",
-                        "rent_agreement:legal",
-                        "warranty:minor",
-                        "other:minor"
-                );
+                DocumentType insurance = new DocumentType();
+                insurance.setName("Car Insurance");
+                insurance.setDefaultSeverity("financial_loss");
+                insurance.setReminderScheduleDays(Arrays.asList(30, 7, 1));
+                insurance.setRelatedDomains(Arrays.asList("geico.com", "statefarm.com", "progressive.com"));
 
-                for (String t : types) {
-                    String[] parts = t.split(":");
-                    DocumentType dt = new DocumentType();
-                    dt.setName(parts[0]);
-                    dt.setDefaultSeverity(parts[1]);
-                    dt.setReminderScheduleDays(Arrays.asList(30, 7, 1));
-                    documentTypeRepository.save(dt);
-                }
+                DocumentType passport = new DocumentType();
+                passport.setName("Passport");
+                passport.setDefaultSeverity("legal");
+                passport.setReminderScheduleDays(Arrays.asList(180, 90, 30));
+                passport.setRelatedDomains(Arrays.asList("travel.state.gov", "passport.gov"));
+
+                DocumentType license = new DocumentType();
+                license.setName("Driver's License");
+                license.setDefaultSeverity("fine");
+                license.setReminderScheduleDays(Arrays.asList(60, 30, 7));
+                license.setRelatedDomains(Arrays.asList("dmv.org", "dmv.ca.gov", "dmv.ny.gov"));
+
+                DocumentType sub = new DocumentType();
+                sub.setName("Subscription");
+                sub.setDefaultSeverity("minor");
+                sub.setReminderScheduleDays(Arrays.asList(7, 1));
+                sub.setRelatedDomains(Arrays.asList("netflix.com", "spotify.com", "amazon.com", "apple.com"));
+
+                documentTypeRepository.saveAll(Arrays.asList(insurance, passport, license, sub));
             }
         };
     }

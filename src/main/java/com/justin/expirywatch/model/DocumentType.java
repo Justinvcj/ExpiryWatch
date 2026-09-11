@@ -18,9 +18,13 @@ public class DocumentType {
     @Column(name = "default_severity", nullable = false)
     private String defaultSeverity;
 
-    @Column(name = "reminder_schedule_days", nullable = false)
     @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "reminder_schedule_days", columnDefinition = "integer[]")
     private List<Integer> reminderScheduleDays;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "related_domains", columnDefinition = "text[]")
+    private List<String> relatedDomains;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -30,4 +34,6 @@ public class DocumentType {
     public void setDefaultSeverity(String defaultSeverity) { this.defaultSeverity = defaultSeverity; }
     public List<Integer> getReminderScheduleDays() { return reminderScheduleDays; }
     public void setReminderScheduleDays(List<Integer> reminderScheduleDays) { this.reminderScheduleDays = reminderScheduleDays; }
+    public List<String> getRelatedDomains() { return relatedDomains; }
+    public void setRelatedDomains(List<String> relatedDomains) { this.relatedDomains = relatedDomains; }
 }
