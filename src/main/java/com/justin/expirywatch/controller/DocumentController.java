@@ -36,7 +36,11 @@ public class DocumentController {
 
     @GetMapping("/documents")
     public String listDocuments(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        model.addAttribute("documents", documentService.getDocumentsForUser(userDetails.getUsername()));
+        long start = System.currentTimeMillis();
+        var docs = documentService.getDocumentsForUser(userDetails.getUsername());
+        long dbTime = System.currentTimeMillis() - start;
+        System.out.println("DEBUG TIMING: DB fetch took " + dbTime + "ms");
+        model.addAttribute("documents", docs);
         model.addAttribute("email", userDetails.getUsername());
         return "documents/list";
     }

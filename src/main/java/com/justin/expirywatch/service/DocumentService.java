@@ -26,7 +26,7 @@ public class DocumentService {
         this.reminderRepository = reminderRepository;
     }
 
-    public List<Document> getDocumentsForUser(String email) {
+    public List<com.justin.expirywatch.dto.DocumentView> getDocumentsForUser(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         return documentRepository.findByUserIdOrderByExtractedExpiryDateAsc(user.getId());
     }
