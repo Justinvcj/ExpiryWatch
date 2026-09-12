@@ -26,9 +26,14 @@ public class DocumentService {
         this.reminderRepository = reminderRepository;
     }
 
-    public List<com.justin.expirywatch.dto.DocumentView> getDocumentsForUser(String email) {
+    public List<com.justin.expirywatch.dto.DocumentView> getDocumentSummariesForUser(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         return documentRepository.findByUserIdOrderByExtractedExpiryDateAsc(user.getId());
+    }
+
+    public List<Document> getDocumentsForUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return documentRepository.findAllByUserIdOrderByExtractedExpiryDateAsc(user.getId());
     }
 
     private volatile List<DocumentType> cachedDocumentTypes;
