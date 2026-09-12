@@ -31,13 +31,21 @@ public class DocumentService {
         return documentRepository.findByUserIdOrderByExtractedExpiryDateAsc(user.getId());
     }
 
+    private volatile List<DocumentType> cachedDocumentTypes;
+
     public List<DocumentType> getAllDocumentTypes() {
-        return documentTypeRepository.findAll();
+        if (cachedDocumentTypes == null || cachedDocumentTypes.isEmpty()) {
+            cachedDocumentTypes = documentTypeRepository.findAll();
+        }
+        return cachedDocumentTypes;
     }
 
     public Document createDocument(String email, Integer typeId, String title, LocalDate expiryDate, String severity, byte[] fileData, String fileContentType, String rawText, BigDecimal confidence) {
         User user = userRepository.findByEmail(email).orElseThrow();
-        DocumentType type = documentTypeRepository.findById(typeId).orElseThrow();
+        DocumentType type = getAllDocumentTypes().stream()
+                .filter(t -> t.getId().equals(typeId))
+                .findFirst()
+                .orElseGet(() -> documentTypeRepository.findById(typeId).orElseThrow());
 
         Document doc = new Document();
         doc.setUser(user);
