@@ -1,27 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - ExpiryWatch</title>
-    <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f5; padding: 2rem; margin: 0; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;}
-        .card a { text-decoration: none; color: inherit; display: block; flex-grow: 1;}
-        .card:hover { box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
-        h1, h2, h3 { margin-top: 0; }
-        .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 500; }
-        .btn-primary { background: #2563eb; color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-danger { background: #dc2626; color: white; }
-        .badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        .severity-minor { background: #dbeafe; color: #1e40af; }
-        .severity-financial_loss { background: #fef08a; color: #854d0e; }
-        .severity-legal, .severity-fine { background: #fee2e2; color: #991b1b; }
-        .status-expired { border-left: 4px solid #dc2626; }
-        .meta { color: #6b7280; font-size: 0.9rem; }
-    </style>
+    <link rel="stylesheet" th:href="@{/theme.css}">
 </head>
 <body>
     <div class="container">
@@ -52,12 +34,12 @@
             <div th:each="doc : ${documents}" 
                  th:if="${doc.status == 'expired' || doc.severity == 'legal' || doc.severity == 'fine'}" 
                  th:classappend="${doc.status == 'expired'} ? 'status-expired' : ''" 
-                 class="card" style="border-left: 4px solid #dc2626;">
+                 class="document-card" style="border-left: 4px solid #dc2626;">
                 <a th:href="@{/documents/{id}(id=${doc.id})}">
                     <h3 th:text="${doc.title}">Document Title</h3>
                     <div class="meta">
-                        <span th:text="${doc.documentType.name}">Type</span> • 
-                        Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> • 
+                        <span th:text="${doc.documentType.name}">Type</span> â€¢ 
+                        Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> â€¢ 
                         Status: <span th:text="${doc.status}">active</span>
                     </div>
                 </a>
@@ -69,12 +51,12 @@
             <h3 style="color: #166534; margin-top: 2rem; border-bottom: 2px solid #dcfce7; padding-bottom: 0.5rem;">Active & Monitored</h3>
             <div th:each="doc : ${documents}" 
                  th:if="${doc.status == 'active' && doc.severity != 'legal' && doc.severity != 'fine'}" 
-                 class="card" style="border-left: 4px solid #16a34a;">
+                 class="document-card" style="border-left: 4px solid #16a34a;">
                 <a th:href="@{/documents/{id}(id=${doc.id})}">
                     <h3 th:text="${doc.title}">Document Title</h3>
                     <div class="meta">
-                        <span th:text="${doc.documentType.name}">Type</span> • 
-                        Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> • 
+                        <span th:text="${doc.documentType.name}">Type</span> â€¢ 
+                        Expires: <strong th:text="${doc.extractedExpiryDate}">2026-12-31</strong> â€¢ 
                         Status: <span th:text="${doc.status}">active</span>
                     </div>
                 </a>
@@ -86,11 +68,11 @@
             <h3 style="color: #4b5563; margin-top: 2rem; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem;">Archived / Renewed</h3>
             <div th:each="doc : ${documents}" 
                  th:if="${doc.status == 'archived' || doc.status == 'renewed'}" 
-                 class="card" style="opacity: 0.7;">
+                 class="document-card" style="opacity: 0.7;">
                 <a th:href="@{/documents/{id}(id=${doc.id})}">
                     <h3 th:text="${doc.title}">Document Title</h3>
                     <div class="meta">
-                        <span th:text="${doc.documentType.name}">Type</span> • 
+                        <span th:text="${doc.documentType.name}">Type</span> â€¢ 
                         Status: <span th:text="${doc.status}">archived</span>
                     </div>
                 </a>
