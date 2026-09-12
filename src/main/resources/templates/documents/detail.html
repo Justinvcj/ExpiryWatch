@@ -23,7 +23,10 @@
 </head>
 <body>
     <div class="container">
-        <a th:href="@{/documents}" style="text-decoration: none; color: #2563eb; margin-bottom: 1rem; display: inline-block;">&larr; Back to Dashboard</a>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+            <img th:src="@{/logo.png}" alt="ExpiryWatch Logo" style="height: 30px; width: auto;">
+            <a th:href="@{/documents}" style="text-decoration: none; color: #2563eb; font-weight: bold;">&larr; Back to Dashboard</a>
+        </div>
         
         <div class="header">
             <div>

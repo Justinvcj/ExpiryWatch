@@ -23,7 +23,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Track New Document</h1>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
+            <img th:src="@{/logo.png}" alt="ExpiryWatch Logo" style="height: 40px; width: auto;">
+            <h1 style="margin: 0;">Track New Document</h1>
+        </div>
         
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
