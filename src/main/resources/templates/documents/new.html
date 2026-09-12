@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>New Document - ExpiryWatch</title>
-    <link rel="stylesheet" th:href="@{/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
 </head>
 <body>
     <div class="container card">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
-            <img th:src="@{/logo.png}" alt="ExpiryWatch Logo" style="height: 40px; width: auto;">
+            <img th:src="@{/images/logo.png}" alt="ExpiryWatch Logo" style="height: 48px; width: auto;">
             <h1 style="margin: 0;">Track New Document</h1>
         </div>
         
@@ -50,7 +50,7 @@
                 <small style="color: #6b7280; display: block; margin-top: 0.5rem;">If you don't upload a file, you'll need to enter the expiry date manually on the next screen.</small>
             </div>
 
-            <button type="submit" class="btn btn-primary">Process Document</button>
+            <button type="submit" class="btn btn-primary" style="margin-bottom: 0.75rem;">Process Document</button>
             <a th:href="@{/documents}" class="btn btn-secondary">Cancel</a>
         </form>
 
@@ -85,7 +85,7 @@
                     <textarea rows="5" readonly th:text="${rawText}"></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Confirm & Save</button>
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 0.75rem;">Confirm & Save</button>
                 <a th:href="@{/documents/new}" class="btn btn-secondary">Start Over</a>
             </form>
         </div>

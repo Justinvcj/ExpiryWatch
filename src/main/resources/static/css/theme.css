@@ -275,3 +275,7 @@ input:focus, select:focus, textarea:focus {
 .status-expired-border { border-left: 4px solid #dc2626; }
 .status-active-border { border-left: 4px solid #16a34a; }
 .status-archived-border { border-left: 4px solid #6b7280; }
+
+.link { text-align: center; margin-top: 1.25rem; font-size: 0.95rem; color: var(--text-muted); }
+.link a { color: #4f46e5; font-weight: 600; text-decoration: none; }
+.link a:hover { text-decoration: underline; }

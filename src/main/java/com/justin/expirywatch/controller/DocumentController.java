@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Controller
-@RequestMapping({"/", "/documents"})
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -30,21 +29,26 @@ public class DocumentController {
         this.dateExtractionService = dateExtractionService;
     }
 
-    @GetMapping
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/documents";
+    }
+
+    @GetMapping("/documents")
     public String listDocuments(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         model.addAttribute("documents", documentService.getDocumentsForUser(userDetails.getUsername()));
         model.addAttribute("email", userDetails.getUsername());
         return "documents/list";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/documents/new")
     public String newDocumentForm(Model model) {
         model.addAttribute("types", documentService.getAllDocumentTypes());
         model.addAttribute("needsConfirmation", false);
         return "documents/new";
     }
 
-    @PostMapping("/new")
+    @PostMapping("/documents/new")
     public String createDocument(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Integer documentTypeId,
@@ -98,7 +102,7 @@ public class DocumentController {
         return "redirect:/documents";
     }
 
-    @PostMapping("/confirm")
+    @PostMapping("/documents/confirm")
     public String confirmDocument(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Integer documentTypeId,
@@ -123,14 +127,14 @@ public class DocumentController {
         return "redirect:/documents";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/documents/{id}")
     public String viewDocument(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails, Model model) {
         Document doc = documentService.getDocument(id, userDetails.getUsername());
         model.addAttribute("document", doc);
         return "documents/detail";
     }
 
-    @GetMapping("/{id}/file")
+    @GetMapping("/documents/{id}/file")
     public ResponseEntity<byte[]> getFile(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Document doc = documentService.getDocument(id, userDetails.getUsername());
         if (doc.getFileData() == null) {
@@ -141,7 +145,7 @@ public class DocumentController {
                 .body(doc.getFileData());
     }
 
-    @PostMapping("/{id}/status")
+    @PostMapping("/documents/{id}/status")
     public String updateStatus(@PathVariable UUID id, @RequestParam String status, @AuthenticationPrincipal UserDetails userDetails) {
         documentService.updateDocumentStatus(id, userDetails.getUsername(), status);
         return "redirect:/documents/" + id;
